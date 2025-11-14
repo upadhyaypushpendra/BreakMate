@@ -33,7 +33,11 @@ export default {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        author: "Pushpendra Upadhyay",
+        description: "A free and open-source desktop application for digital wellness and healthy screen habits",
+        setupIcon: "./assets/icon.ico",
+      },
     },
     {
       name: '@electron-forge/maker-zip',
