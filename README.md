@@ -4,10 +4,15 @@ A free and open-source desktop application for digital wellness and healthy scre
 
 ## 📥 Download
 
-**Latest Release (v1.0.1):**
-- [Download for macOS (Apple Silicon)](https://github.com/pushpendra-upadhyay-lilly/BreakMate/releases/download/v1.0.1/BreakMate-darwin-arm64-1.0.1.zip)
+**Latest Release (v1.0.0):**
+
+- [Download for macOS (Apple Silicon)](https://github.com/upadhyaypushpendra/BreakMate/releases/download/v1.0.0/BreakMate-darwin-arm64-1.0.0.zip)
 
 > **Note:** After downloading, you may need to run `xattr -cr /Applications/BreakMate.app` to bypass macOS Gatekeeper warnings.
+
+- [Download for Windows](https://github.com/upadhyaypushpendra/BreakMate/releases/download/v1.0.0/BreakMate-1.0.1 Setup)
+
+> **Note:** After downloading, right click and open the application, it will install automatically.
 
 ## Description
 
@@ -120,21 +125,25 @@ Distributables will be generated in the `out/make/` directory.[7][6]
 #### Build for macOS (Multiple Options)
 
 Build for your current Mac architecture:
+
 ```bash
 npm run build:mac
 ```
 
 Build specifically for Apple Silicon (M1/M2/M3):
+
 ```bash
 npm run build:mac:arm64
 ```
 
 Build for Intel Macs:
+
 ```bash
 npm run build:mac:x64
 ```
 
 Build Universal binary (works on both Intel and Apple Silicon):
+
 ```bash
 npm run build:mac:universal
 ```
@@ -150,6 +159,7 @@ npm run package
 ```
 
 For macOS packaging only:
+
 ```bash
 npm run package:mac
 ```
@@ -159,6 +169,7 @@ The packaged app will be in the `out/` folder.[5][4]
 ### Output Locations
 
 After building, you'll find:
+
 - **Packaged apps**: `out/<app-name>-darwin-arm64/` (or x64/universal)
 - **Distributables**: `out/make/` (ZIP files for macOS)
 - **Compiled code**: `dist/` directory
@@ -238,22 +249,22 @@ Be respectful, inclusive, and constructive in all interactions. We're building t
 
 ## Scripts Reference
 
-| Command                      | Description                                           |
-| ---------------------------- | ----------------------------------------------------- |
-| `npm run dev`                | Run app in development mode with hot-reload[4]        |
-| `npm start`                  | Start app with Electron Forge[4]                      |
-| `npm run build`              | Build main and renderer for production[4]             |
-| `npm run build:mac`          | Build for macOS (current architecture)                |
-| `npm run build:mac:arm64`    | Build for Apple Silicon (M1/M2/M3 Macs)              |
-| `npm run build:mac:x64`      | Build for Intel Macs                                  |
-| `npm run build:mac:universal`| Build Universal binary (Intel + Apple Silicon)        |
-| `npm run package`            | Package app without creating distributables[4]        |
-| `npm run package:mac`        | Package app for macOS only                            |
-| `npm run make`               | Create platform-specific distributables[4]            |
-| `npm run lint`               | Check code for linting errors                         |
-| `npm run lint:fix`           | Fix linting errors automatically                      |
-| `npm run format`             | Format code with Prettier                             |
-| `npm run format:check`       | Check code formatting                                 |
+| Command                       | Description                                    |
+| ----------------------------- | ---------------------------------------------- |
+| `npm run dev`                 | Run app in development mode with hot-reload[4] |
+| `npm start`                   | Start app with Electron Forge[4]               |
+| `npm run build`               | Build main and renderer for production[4]      |
+| `npm run build:mac`           | Build for macOS (current architecture)         |
+| `npm run build:mac:arm64`     | Build for Apple Silicon (M1/M2/M3 Macs)        |
+| `npm run build:mac:x64`       | Build for Intel Macs                           |
+| `npm run build:mac:universal` | Build Universal binary (Intel + Apple Silicon) |
+| `npm run package`             | Package app without creating distributables[4] |
+| `npm run package:mac`         | Package app for macOS only                     |
+| `npm run make`                | Create platform-specific distributables[4]     |
+| `npm run lint`                | Check code for linting errors                  |
+| `npm run lint:fix`            | Fix linting errors automatically               |
+| `npm run format`              | Format code with Prettier                      |
+| `npm run format:check`        | Check code formatting                          |
 
 ## Run in Mac or Drag into Applications Folder
 

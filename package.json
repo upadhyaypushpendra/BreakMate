@@ -1,6 +1,6 @@
 {
   "name": "breakmate",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "main": "dist/main/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,6 +17,8 @@
     "build:mac:arm64": "npm run build && cross-env NODE_ENV=production electron-forge make --platform darwin --arch arm64",
     "build:mac:x64": "npm run build && cross-env NODE_ENV=production electron-forge make --platform darwin --arch x64",
     "build:mac:universal": "npm run build && cross-env NODE_ENV=production electron-forge make --platform darwin --arch universal",
+    "build:win:x64": "npm run build && cross-env NODE_ENV=production electron-forge make --platform win32 --arch x64",
+    "build:win:arm64": "npm run build && cross-env NODE_ENV=production electron-forge make --platform win32 --arch arm64",
     "package:mac": "npm run build && cross-env NODE_ENV=production electron-forge package --platform darwin",
     "publish": "npm run build && electron-forge publish",
     "lint": "eslint . --ext .ts,.svelte",
@@ -25,9 +27,9 @@
     "format:check": "prettier --check ."
   },
   "keywords": [],
-  "author": "",
+  "author": "Pushpendra Upadhyay",
   "license": "ISC",
-  "description": "",
+  "description": "A free and open-source desktop application for digital wellness and healthy screen habits.",
   "devDependencies": {
     "@electron-forge/cli": "^7.10.2",
     "@electron-forge/maker-deb": "^7.10.2",

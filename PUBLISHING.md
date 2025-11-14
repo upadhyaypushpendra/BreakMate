@@ -54,6 +54,7 @@ npm run publish
 ```
 
 This will:
+
 - Build your app (main + renderer)
 - Package it with Electron Forge
 - Create distributables (DMG, ZIP, etc.)
@@ -62,7 +63,7 @@ This will:
 
 ### 3. Review and Publish on GitHub
 
-1. Go to your GitHub repository: https://github.com/pushpendra-upadhyay-lilly/ItsBreakTime/releases
+1. Go to your GitHub repository: https://github.com/upadhyaypushpendra/BreakMate/releases
 2. You'll see a draft release with your build artifacts attached
 3. Edit the release notes
 4. Click "Publish release" when ready
@@ -72,7 +73,7 @@ This will:
 The publisher is configured in `forge.config.js`:
 
 - **Draft Mode**: Releases are created as drafts by default, so you can review before publishing
-- **Repository**: `pushpendra-upadhyay-lilly/ItsBreakTime`
+- **Repository**: `upadhyaypushpendra/BreakMate`
 - **Prerelease**: Set to `false` (change to `true` for beta releases)
 
 ## Customization Options
@@ -110,6 +111,7 @@ npm run build && electron-forge publish --platform darwin --arch x64
 ### Authentication Error
 
 If you see "Bad credentials", make sure:
+
 - Your `GITHUB_TOKEN` is set correctly
 - The token has the `repo` scope
 - The token hasn't expired
@@ -121,6 +123,7 @@ Make sure your token has write access to the repository.
 ### Build Artifacts Not Uploading
 
 Check that your makers are configured correctly in `forge.config.js`. Currently configured:
+
 - ZIP (macOS)
 - Squirrel (Windows)
 - DEB (Linux)

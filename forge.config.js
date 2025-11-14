@@ -7,8 +7,8 @@ export default {
       name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'pushpendra-upadhyay-lilly',
-          name: 'ItsBreakTime'
+          owner: 'upadhyaypushpendra',
+          name: 'BreakMate'
         },
         prerelease: false,
         draft: true, // Creates a draft release so you can review before publishing
