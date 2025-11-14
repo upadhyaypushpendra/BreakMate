@@ -10,9 +10,9 @@ A free and open-source desktop application for digital wellness and healthy scre
 
 > **Note:** After downloading, you may need to run `xattr -cr /Applications/BreakMate.app` to bypass macOS Gatekeeper warnings.
 
-- [Download for Windows](https://github.com/upadhyaypushpendra/BreakMate/releases/download/v1.0.0/BreakMate-1.0.1 Setup)
+- [Download for Windows](https://github.com/upadhyaypushpendra/BreakMate/releases/download/v1.0.0/BreakMate-1.0.0.Setup.exe)
 
-> **Note:** After downloading, right click and open the application, it will install automatically.
+> **Note:** After downloading, right click and open the application, it will install automatically. If you get warning from windows defender, click run anyway.
 
 ## Description
 
