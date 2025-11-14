@@ -312,6 +312,13 @@ function createBreakOverlays() {
     // Use ready-to-show event to ensure content is rendered before showing
     overlayWindow.once('ready-to-show', () => {
       console.log(`[Break] Overlay ${index + 1} ready to show`);
+      // Ensure the window is properly positioned on its display
+      overlayWindow.setBounds({
+        x,
+        y,
+        width,
+        height
+      });
       // Don't show here - let showBreakOverlay control when to show
     });
 
@@ -347,11 +354,24 @@ function showBreakOverlay(duration: number) {
     mainWindow.webContents.executeJavaScript(`
       window.timerService?.breakTimerManager?.getBreakTimeRemaining() || ${duration}
     `).then((remaining: number) => {
-      breakOverlayWindows.forEach((overlayWindow) => {
+      const displays = screen.getAllDisplays();
+      
+      breakOverlayWindows.forEach((overlayWindow, windowIndex) => {
         const showWindow = () => {
-          console.log('[Break] Showing overlay window');
+          console.log('[Break] Showing overlay window', windowIndex + 1);
           // Give Svelte a moment to render after receiving the message
           setTimeout(() => {
+            // Ensure the window is positioned correctly on its display before going fullscreen
+            if (windowIndex < displays.length) {
+              const { x, y, width, height } = displays[windowIndex].bounds;
+              overlayWindow.setBounds({
+                x,
+                y,
+                width,
+                height
+              });
+            }
+            
             overlayWindow.show();
             overlayWindow.focus();
 
@@ -754,6 +774,14 @@ app.whenReady().then(() => {
           });
 
           overlayWindow.once('ready-to-show', () => {
+            // Ensure the window is properly positioned on its display before going fullscreen
+            overlayWindow.setBounds({
+              x,
+              y,
+              width,
+              height
+            });
+            
             overlayWindow.show();
             overlayWindow.focus();
 

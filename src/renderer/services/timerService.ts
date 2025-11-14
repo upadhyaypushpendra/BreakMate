@@ -105,6 +105,8 @@ export class BreakTimerManager {
 
 export class TimerService {
   private intervalId: NodeJS.Timeout | null = null;
+  private timerStartTime = 0;
+  private timerDuration = 0;
   public breakTimerManager = new BreakTimerManager();
 
   start() {
@@ -120,17 +122,24 @@ export class TimerService {
     console.log('[TimerService] Starting timer with', state.timeRemaining, 'seconds remaining');
     timerState.update((s: TimerState) => ({ ...s, isRunning: true }));
 
+    // Use system time instead of interval counting
+    this.timerStartTime = Date.now();
+    this.timerDuration = state.timeRemaining;
+
     this.intervalId = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - this.timerStartTime) / 1000);
+      const remaining = Math.max(0, this.timerDuration - elapsed);
+
       timerState.update((state: TimerState) => {
-        if (state.timeRemaining > 0) {
-          return { ...state, timeRemaining: state.timeRemaining - 1 };
+        if (remaining > 0) {
+          return { ...state, timeRemaining: remaining };
         } else {
           // Timer reached zero
           this.handleTimerComplete();
           return state;
         }
       });
-    }, 1000); // tick every 1 second
+    }, 100); // Check every 100ms for more accuracy
   }
 
   pause() {
@@ -140,6 +149,8 @@ export class TimerService {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
+    this.timerStartTime = 0;
+    this.timerDuration = 0;
   }
 
   reset() {
@@ -210,11 +221,12 @@ export class TimerService {
   }
 
   snoozeBreak() {
-    const settings = get(timerSettings);
+    // Set timer for 5 minutes snooze (300 seconds)
+    const SNOOZE_DURATION_SECONDS = 5 * 60;
 
     timerState.update((s) => ({
       ...s,
-      timeRemaining: settings.workDuration * 60,
+      timeRemaining: SNOOZE_DURATION_SECONDS,
       isOnBreak: false,
       isRunning: false
     }));
