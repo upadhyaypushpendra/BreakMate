@@ -65,7 +65,7 @@
     border: none;
     border-radius: 0.5rem;
     cursor: pointer;
-    background: #007aff;
+    background: #886a08;
     color: white;
     font-weight: 500;
     transition: opacity 0.2s;
@@ -86,6 +86,6 @@
   }
 
   .secondary {
-    background: #6c757d;
+    background: #6d0404;
   }
 </style>

@@ -7,7 +7,7 @@
   import type { Theme } from './stores/app';
   import { appStore } from './stores/app';
 
-  let resolvedTheme: 'light' | 'dark' = 'light';
+  let resolvedTheme: 'light' | 'dark' | 'system' = 'system';
   let isReady = false;
   let showSettings = false; // Toggle between Timer and Settings view
 
@@ -62,37 +62,19 @@
 
     resolvedTheme = getResolvedTheme();
   }
-
-  function cycleTheme() {
-    const themes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system'];
-    const currentIndex = themes.indexOf($appStore.theme);
-    const nextTheme = themes[(currentIndex + 1) % themes.length];
-    appStore.setTheme(nextTheme);
-  }
 </script>
 
 <main>
   <header>
     <h1>BreakMate</h1>
     <div class="header-controls">
-      <!-- Toggle Settings Button -->
+      <!-- Settings Button -->
       <button
         class="settings-btn"
         on:click={() => (showSettings = !showSettings)}
         title="Toggle settings"
       >
-        {showSettings ? '⬅️ Back' : '⚙️ Settings'}
-      </button>
-
-      <!-- Theme Toggle Button -->
-      <button class="theme-toggle" on:click={cycleTheme} title="Toggle theme">
-        {#if $appStore.theme === 'light'}
-          ☀️ Light
-        {:else if $appStore.theme === 'dark'}
-          🌙 Dark
-        {:else}
-          🖥️ System
-        {/if}
+        {showSettings ? '⬅️ Back' : '⚙️'}
       </button>
     </div>
   </header>
@@ -108,38 +90,60 @@
 
 <style>
   :global(:root) {
-    --bg-color: #ffffff;
-    --text-color: #333333;
-    --accent-color: #2196f3;
-    --button-bg: #f0f0f0;
-    --button-hover: #e0e0e0;
+    --bg-color: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --bg-color-solid: #f5f7fa;
+    --text-color: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --accent-color: #3498db;
+    --accent-dark: #2980b9;
+    --button-bg: rgba(255, 255, 255, 0.8);
+    --button-hover: rgba(255, 255, 255, 0.95);
+    --button-border: rgba(52, 152, 219, 0.3);
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --border-color: rgba(52, 152, 219, 0.2);
   }
 
   :global(:root[data-theme='dark']),
   :global(:root:not([data-theme])) {
     @media (prefers-color-scheme: dark) {
-      --bg-color: #1e1e1e;
-      --text-color: #eeeeee;
-      --accent-color: #64b5f6;
-      --button-bg: #2a2a2a;
-      --button-hover: #3a3a3a;
+      --bg-color: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+      --bg-color-solid: #0f2027;
+      --text-color: #ecf0f1;
+      --text-secondary: #bdc3c7;
+      --accent-color: #3498db;
+      --accent-dark: #2980b9;
+      --button-bg: rgba(44, 62, 80, 0.8);
+      --button-hover: rgba(52, 73, 94, 0.9);
+      --button-border: rgba(52, 152, 219, 0.4);
+      --card-bg: rgba(44, 62, 80, 0.85);
+      --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --border-color: rgba(52, 152, 219, 0.3);
     }
   }
 
   :global(:root[data-theme='dark']) {
-    --bg-color: #1e1e1e;
-    --text-color: #eeeeee;
-    --accent-color: #64b5f6;
-    --button-bg: #2a2a2a;
-    --button-hover: #3a3a3a;
+    --bg-color: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    --bg-color-solid: #0f2027;
+    --text-color: #ecf0f1;
+    --text-secondary: #bdc3c7;
+    --accent-color: #3498db;
+    --accent-dark: #2980b9;
+    --button-bg: rgba(44, 62, 80, 0.8);
+    --button-hover: rgba(52, 73, 94, 0.9);
+    --button-border: rgba(52, 152, 219, 0.4);
+    --card-bg: rgba(44, 62, 80, 0.85);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --border-color: rgba(52, 152, 219, 0.3);
   }
 
   :global(body) {
     margin: 0;
     padding: 0;
     font-family:
-      -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    background: var(--bg-color);
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+      'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    background: var(--bg-color-solid);
     color: var(--text-color);
     transition:
       background 0.3s ease,
@@ -147,10 +151,11 @@
   }
 
   main {
-    padding: 20px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: var(--bg-color);
+    background-attachment: fixed;
   }
 
   header {
@@ -158,33 +163,49 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
   }
 
   h1 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
   }
 
   .header-controls {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
 
   .theme-toggle,
   .settings-btn {
-    padding: 8px 16px;
+    padding: 10px 18px;
     background: var(--button-bg);
-    border: none;
-    border-radius: 6px;
+    border: 1.5px solid transparent;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 500;
     color: var(--text-color);
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
   }
 
   .theme-toggle:hover,
   .settings-btn:hover {
     background: var(--button-hover);
+    transform: translateY(-1px);
+  }
+
+  .theme-toggle:active,
+  .settings-btn:active {
+    transform: translateY(0);
   }
 
   .content {

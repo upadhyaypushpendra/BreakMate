@@ -21,7 +21,7 @@ export interface StoreSchema {
 const store = new Store<StoreSchema>({
   name: 'breakmate-settings',
   defaults: {
-    theme: 'light',
+    theme: 'system',
     breakInterval: 20,
     breakDuration: 20,
     autoLaunchConfigured: false,
@@ -265,7 +265,8 @@ function createBreakOverlays() {
       height,
       show: false,
       frame: false,
-      transparent: false,
+      transparent: true,
+      backgroundColor: "#00000001",
       alwaysOnTop: true,
       skipTaskbar: true,
       resizable: false,
@@ -359,7 +360,7 @@ function showBreakOverlay(duration: number) {
       breakOverlayWindows.forEach((overlayWindow, windowIndex) => {
         const showWindow = () => {
           console.log('[Break] Showing overlay window', windowIndex + 1);
-          // Give Svelte a moment to render after receiving the message
+          // Give Svelte more time to render the component and animation before showing
           setTimeout(() => {
             // Ensure the window is positioned correctly on its display before going fullscreen
             if (windowIndex < displays.length) {
@@ -385,7 +386,7 @@ function showBreakOverlay(duration: number) {
             } else {
               overlayWindow.setFullScreen(true);
             }
-          }, 100);
+          }, 300);
         };
 
         const sendStartMessage = () => {
@@ -401,8 +402,8 @@ function showBreakOverlay(duration: number) {
           console.log('[Break] Waiting for overlay content to load...');
           overlayWindow.webContents.once('did-finish-load', () => {
             console.log('[Break] Overlay content loaded');
-            // Wait a bit more for Svelte to mount and render
-            setTimeout(sendStartMessage, 150);
+            // Wait more for Svelte to mount, render, and prepare the fade-in animation
+            setTimeout(sendStartMessage, 250);
           });
         } else {
           console.log('[Break] Overlay already loaded');
@@ -730,7 +731,7 @@ app.whenReady().then(() => {
           height,
           show: false,
           frame: false,
-          transparent: false,
+          transparent: true,
           alwaysOnTop: true,
           skipTaskbar: true,
           resizable: false,
