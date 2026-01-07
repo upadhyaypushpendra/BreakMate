@@ -4,6 +4,7 @@
   import Timer from './components/Timer.svelte';
   import { applyTheme, getResolvedTheme } from './lib/theme';
   import { timerService } from './services/timerService';
+  import { idleDetectionService } from './services/idleDetectionService';
   import type { Theme } from './stores/app';
   import { appStore } from './stores/app';
 
@@ -45,6 +46,12 @@
         timerService.snoozeBreak();
       });
     }
+
+    // Initialize idle detection service
+    console.log('[App] Initializing idle detection service');
+    idleDetectionService.onResetTimer(() => {
+      console.log('[App] Timer reset triggered by smart pause');
+    });
 
     return () => mediaQuery.removeEventListener('change', handleChange);
   });
@@ -182,30 +189,6 @@
   .header-controls {
     display: flex;
     gap: 0.75rem;
-  }
-
-  .theme-toggle,
-  .settings-btn {
-    padding: 10px 18px;
-    background: var(--button-bg);
-    border: 1.5px solid transparent;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-color);
-    transition: all 0.2s ease;
-  }
-
-  .theme-toggle:hover,
-  .settings-btn:hover {
-    background: var(--button-hover);
-    transform: translateY(-1px);
-  }
-
-  .theme-toggle:active,
-  .settings-btn:active {
-    transform: translateY(0);
   }
 
   .content {

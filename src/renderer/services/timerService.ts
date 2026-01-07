@@ -248,6 +248,22 @@ export class TimerService {
 
     setTimeout(() => this.start(), 500);
   }
+
+  resetDueToSystemResume() {
+    console.log('[TimerService] Resetting timer due to system resume after prolonged lock');
+    const settings = get(timerSettings);
+
+    // Reset to full work duration and stop the timer
+    timerState.update((s) => ({
+      ...s,
+      isOnBreak: false,
+      isRunning: false,
+      timeRemaining: settings.workDuration * 60
+    }));
+
+    // Optionally start the timer immediately
+    setTimeout(() => this.start(), 500);
+  }
 }
 
 export const timerService = new TimerService();

@@ -19,6 +19,12 @@ const api = {
     disable: () => ipcRenderer.invoke('auto-launch:disable'),
     isEnabled: () => ipcRenderer.invoke('auto-launch:is-enabled'),
   },
+  smartPause: {
+    isEnabled: () => ipcRenderer.invoke('smart-pause:is-enabled'),
+    setEnabled: (enabled: boolean) => ipcRenderer.invoke('smart-pause:set-enabled', enabled),
+    getThreshold: () => ipcRenderer.invoke('smart-pause:get-threshold'),
+    setThreshold: (threshold: number) => ipcRenderer.invoke('smart-pause:set-threshold', threshold),
+  },
 };
 
 // Expose protected API to renderer via contextBridge
@@ -45,7 +51,12 @@ contextBridge.exposeInMainWorld('electron', {
         'break:start',
         'break:timer-update',
         'break:skipped',
-        'break:snoozed'
+        'break:snoozed',
+        'system:locked',
+        'system:unlocked',
+        'smart-pause:reset-timer',
+        'smart-pause:enabled-changed',
+        'smart-pause:threshold-changed'
       ];
       if (validChannels.includes(channel)) {
         ipcRenderer.on(channel, callback);
@@ -57,7 +68,12 @@ contextBridge.exposeInMainWorld('electron', {
         'break:start',
         'break:timer-update',
         'break:skipped',
-        'break:snoozed'
+        'break:snoozed',
+        'system:locked',
+        'system:unlocked',
+        'smart-pause:reset-timer',
+        'smart-pause:enabled-changed',
+        'smart-pause:threshold-changed'
       ];
       if (validChannels.includes(channel)) {
         ipcRenderer.removeAllListeners(channel);
