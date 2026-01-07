@@ -4,13 +4,13 @@ A free and open-source desktop application for digital wellness and healthy scre
 
 ## 📥 Download
 
-**Latest Release (v1.0.0):**
+**Latest Release (v1.1.0):**
 
-- [Download for macOS (Apple Silicon)](https://github.com/upadhyaypushpendra/BreakMate/releases/download/v1.0.0/BreakMate-darwin-arm64-1.0.0.zip)
+- [Download for macOS (Apple Silicon)](https://github.com/upadhyaypushpendra/BreakMate/releases/download/v1.1.0/BreakMate-darwin-arm64-1.1.0.zip)
 
 > **Note:** After downloading, you may need to run `xattr -cr /Applications/BreakMate.app` to bypass macOS Gatekeeper warnings.
 
-- [Download for Windows](https://github.com/upadhyaypushpendra/BreakMate/releases/download/v1.0.0/BreakMate-1.0.0.Setup.exe)
+- [Download for Windows](https://github.com/upadhyaypushpendra/BreakMate/releases/download/v1.1.0/BreakMate-1.1.0.Setup.exe)
 
 > **Note:** After downloading, right click and open the application, it will install automatically. If you get warning from windows defender, click run anyway.
 
@@ -47,7 +47,8 @@ Before you begin, ensure you have the following installed on your system:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/breakmate.git
+git clone https://github.com/upadhyaypushpendra/BreakMate
+
 cd breakmate
 ```
 
