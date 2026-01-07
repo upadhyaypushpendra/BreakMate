@@ -15,6 +15,7 @@ export interface TimerState {
   timeRemaining: number; // in seconds
   cycleCount: number; // track breaks taken
   totalBreaksTaken: number;
+  isSystemLocked?: boolean;
 }
 
 // Default settings
@@ -32,7 +33,8 @@ const defaultState: TimerState = {
   isOnBreak: false,
   timeRemaining: (persistedSettings?.workDuration || defaultSettings.workDuration) * 60,
   cycleCount: 0,
-  totalBreaksTaken: 0
+  totalBreaksTaken: 0,
+  isSystemLocked: false
 };
 
 export const timerSettings = writable<TimerSettings>(persistedSettings || defaultSettings);

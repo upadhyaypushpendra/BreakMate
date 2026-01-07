@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, nativeImage, Tray, ipcMain, screen, dialog } from 'electron';
+import { app, BrowserWindow, Menu, nativeImage, Tray, ipcMain, screen, dialog, powerMonitor } from 'electron';
 import path from 'path';
 import Store from 'electron-store';
 
@@ -9,6 +9,8 @@ export interface StoreSchema {
   breakDuration: number;
   autoLaunchConfigured: boolean;
   autoLaunchEnabled: boolean;
+  smartPauseEnabled?: boolean;
+  smartPauseThreshold?: number; // in minutes
   timerSettings?: {
     workDuration: number;
     breakDuration: number;
@@ -26,6 +28,8 @@ const store = new Store<StoreSchema>({
     breakDuration: 20,
     autoLaunchConfigured: false,
     autoLaunchEnabled: false,
+    smartPauseEnabled: true,
+    smartPauseThreshold: 5,
     timerSettings: {
       workDuration: 20,
       breakDuration: 20,
@@ -163,6 +167,31 @@ ipcMain.handle('auto-launch:is-enabled', async () => {
     console.error('[Auto-launch] Failed to check status:', error);
     return false;
   }
+});
+
+// Smart Pause IPC Handlers
+ipcMain.handle('smart-pause:is-enabled', async () => {
+  return store.get('smartPauseEnabled') ?? true;
+});
+
+ipcMain.handle('smart-pause:set-enabled', async (_event, enabled: boolean) => {
+  store.set('smartPauseEnabled', enabled);
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('smart-pause:enabled-changed', enabled);
+  }
+  return { success: true };
+});
+
+ipcMain.handle('smart-pause:get-threshold', async () => {
+  return store.get('smartPauseThreshold') ?? 5;
+});
+
+ipcMain.handle('smart-pause:set-threshold', async (_event, threshold: number) => {
+  store.set('smartPauseThreshold', threshold);
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('smart-pause:threshold-changed', threshold);
+  }
+  return { success: true };
 });
 
 // Break Timer IPC Handlers - Bridge to renderer's timerService
@@ -356,7 +385,7 @@ function showBreakOverlay(duration: number) {
       window.timerService?.breakTimerManager?.getBreakTimeRemaining() || ${duration}
     `).then((remaining: number) => {
       const displays = screen.getAllDisplays();
-      
+
       breakOverlayWindows.forEach((overlayWindow, windowIndex) => {
         const showWindow = () => {
           console.log('[Break] Showing overlay window', windowIndex + 1);
@@ -372,7 +401,7 @@ function showBreakOverlay(duration: number) {
                 height
               });
             }
-            
+
             overlayWindow.show();
             overlayWindow.focus();
 
@@ -710,6 +739,48 @@ app.whenReady().then(() => {
   createTray();
   createWindow();
 
+  // Smart Pause: Setup system lock detection
+  if (powerMonitor) {
+    let lockTime = 0;
+
+    powerMonitor.on('lock-screen', () => {
+      console.log('[Smart Pause] System locked');
+      lockTime = Date.now();
+
+      // Notify renderer that system is locked
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('system:locked');
+      }
+    });
+
+    powerMonitor.on('unlock-screen', () => {
+      console.log('[Smart Pause] System unlocked');
+      const lockedDurationMinutes = (Date.now() - lockTime) / (1000 * 60);
+      const threshold = store.get('smartPauseThreshold') ?? 5;
+      const isSmartPauseEnabled = store.get('smartPauseEnabled') ?? true;
+
+      console.log(`[Smart Pause] Locked for ${lockedDurationMinutes.toFixed(2)} minutes (threshold: ${threshold})`);
+
+      // If locked for longer than threshold and smart pause is enabled, reset timer
+      if (isSmartPauseEnabled && lockedDurationMinutes >= threshold) {
+        console.log('[Smart Pause] Resetting work timer due to prolonged lock');
+
+        // First, hide any active break overlay
+        if (breakOverlayWindows.length > 0) {
+          console.log('[Smart Pause] Hiding break overlay before reset');
+          hideBreakOverlay();
+        }
+
+        // Then reset the timer
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('smart-pause:reset-timer');
+        }
+      }
+
+      lockTime = 0;
+    });
+  }
+
   screen.on('display-added', () => {
     console.log('[Break] Display added');
 
@@ -782,7 +853,7 @@ app.whenReady().then(() => {
               width,
               height
             });
-            
+
             overlayWindow.show();
             overlayWindow.focus();
 

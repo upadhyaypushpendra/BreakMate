@@ -3,9 +3,13 @@
   import { onMount } from 'svelte';
   import { timerSettings } from '../stores/timer';
   import { appStore } from '../stores/app';
+  import { idleDetectionService } from '../services/idleDetectionService';
 
   let autoLaunchEnabled = false;
   let isLoadingAutoLaunch = true;
+  let smartPauseEnabled = true;
+  let smartPauseThreshold = 5;
+  let isLoadingSmartPause = true;
 
   onMount(async () => {
     // Load current auto-launch status
@@ -22,6 +26,17 @@
     } else {
       console.warn('[Settings] autoLaunch API not available');
       isLoadingAutoLaunch = false;
+    }
+
+    // Load smart pause settings
+    try {
+      smartPauseEnabled = await idleDetectionService.isSmartPauseEnabled();
+      smartPauseThreshold = await idleDetectionService.getSmartPauseThreshold();
+      console.log('[Settings] Loaded smart pause settings:', { smartPauseEnabled, smartPauseThreshold });
+    } catch (error) {
+      console.error('[Settings] Failed to load smart pause settings:', error);
+    } finally {
+      isLoadingSmartPause = false;
     }
   });
 
@@ -56,6 +71,44 @@
     } catch (error) {
       console.error('[Settings] Error toggling auto-launch:', error);
       autoLaunchEnabled = !newValue; // Revert on error
+    }
+  }
+
+  async function toggleSmartPause(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    const newValue = checkbox.checked;
+
+    try {
+      const success = await idleDetectionService.setSmartPauseEnabled(newValue);
+      if (!success) {
+        console.error('[Settings] Failed to update smart pause');
+        smartPauseEnabled = !newValue;
+      } else {
+        console.log('[Settings] Smart pause updated:', newValue);
+        smartPauseEnabled = newValue;
+      }
+    } catch (error) {
+      console.error('[Settings] Error toggling smart pause:', error);
+      smartPauseEnabled = !newValue;
+    }
+  }
+
+  async function updateSmartPauseThreshold(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const newValue = parseInt(input.value, 10);
+
+    try {
+      const success = await idleDetectionService.setSmartPauseThreshold(newValue);
+      if (!success) {
+        console.error('[Settings] Failed to update smart pause threshold');
+        smartPauseThreshold = 5;
+      } else {
+        console.log('[Settings] Smart pause threshold updated:', newValue);
+        smartPauseThreshold = newValue;
+      }
+    } catch (error) {
+      console.error('[Settings] Error updating smart pause threshold:', error);
+      smartPauseThreshold = 5;
     }
   }
 
@@ -101,6 +154,36 @@
     />
     Start BreakMate automatically when you log in
   </label>
+
+  <h2>Smart Pause</h2>
+  <p class="setting-description">
+    Automatically reset your work timer when you return after a system lock. Prevents immediate break notifications after being away.
+  </p>
+
+  <label class="checkbox-label">
+    <input
+      type="checkbox"
+      bind:checked={smartPauseEnabled}
+      on:change={toggleSmartPause}
+      disabled={isLoadingSmartPause}
+    />
+    Enable Smart Pause
+  </label>
+
+  {#if smartPauseEnabled}
+    <label>
+      Lock Duration Threshold (minutes):
+      <input
+        type="number"
+        min="1"
+        max="60"
+        bind:value={smartPauseThreshold}
+        on:change={updateSmartPauseThreshold}
+        disabled={isLoadingSmartPause}
+      />
+      <small>If locked longer than this, timer resets when unlocked</small>
+    </label>
+  {/if}
 
   <h2>Appearance</h2>
 
@@ -182,6 +265,21 @@
   input[type='checkbox']:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+  }
+
+  .setting-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+  }
+
+  small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: normal;
   }
 
   .theme-btn {

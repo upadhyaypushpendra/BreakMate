@@ -10,6 +10,12 @@ export interface IElectronAPI {
     disable: () => Promise<{ success: boolean; error?: string }>;
     isEnabled: () => Promise<boolean>;
   };
+  smartPause: {
+    isEnabled: () => Promise<boolean>;
+    setEnabled: (enabled: boolean) => Promise<{ success: boolean }>;
+    getThreshold: () => Promise<number>;
+    setThreshold: (threshold: number) => Promise<{ success: boolean }>;
+  };
 }
 
 declare global {
