@@ -385,7 +385,7 @@ function showBreakOverlay(duration: number) {
       window.timerService?.breakTimerManager?.getBreakTimeRemaining() || ${duration}
     `).then((remaining: number) => {
       const displays = screen.getAllDisplays();
-      
+
       breakOverlayWindows.forEach((overlayWindow, windowIndex) => {
         const showWindow = () => {
           console.log('[Break] Showing overlay window', windowIndex + 1);
@@ -401,7 +401,7 @@ function showBreakOverlay(duration: number) {
                 height
               });
             }
-            
+
             overlayWindow.show();
             overlayWindow.focus();
 
@@ -746,7 +746,7 @@ app.whenReady().then(() => {
     powerMonitor.on('lock-screen', () => {
       console.log('[Smart Pause] System locked');
       lockTime = Date.now();
-      
+
       // Notify renderer that system is locked
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('system:locked');
@@ -764,11 +764,19 @@ app.whenReady().then(() => {
       // If locked for longer than threshold and smart pause is enabled, reset timer
       if (isSmartPauseEnabled && lockedDurationMinutes >= threshold) {
         console.log('[Smart Pause] Resetting work timer due to prolonged lock');
+
+        // First, hide any active break overlay
+        if (breakOverlayWindows.length > 0) {
+          console.log('[Smart Pause] Hiding break overlay before reset');
+          hideBreakOverlay();
+        }
+
+        // Then reset the timer
         if (mainWindow && !mainWindow.isDestroyed()) {
           mainWindow.webContents.send('smart-pause:reset-timer');
         }
       }
-      
+
       lockTime = 0;
     });
   }
@@ -845,7 +853,7 @@ app.whenReady().then(() => {
               width,
               height
             });
-            
+
             overlayWindow.show();
             overlayWindow.focus();
 
